@@ -34,18 +34,8 @@ public class LvglToolBehaviorProvider extends DefaultToolBehaviorProvider {
 	}
 
 	@Override
-	public String getToolTip(org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm ga) {
+	public Object getToolTip(org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm ga) {
 		PictogramElement pe = ga.getPictogramElement();
-		IFeatureProvider fp = getFeatureProvider();
-		Object bo = fp.getBusinessObjectForPictogramElement(pe);
-		if (bo instanceof LvglWidget widget) {
-			return widget.getName() + " (" + widget.getWidgetType().getDisplayName() + ")";
-		}
-		return super.getToolTip(ga);
-	}
-
-	@Override
-	public Object getToolTip(org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm ga, org.eclipse.graphiti.mm.pictograms.PictogramElement pe) {
 		IFeatureProvider fp = getFeatureProvider();
 		Object bo = fp.getBusinessObjectForPictogramElement(pe);
 		if (bo instanceof LvglWidget widget) {
@@ -59,7 +49,7 @@ public class LvglToolBehaviorProvider extends DefaultToolBehaviorProvider {
 			}
 			return sb.toString();
 		}
-		return super.getToolTip(ga, pe);
+		return super.getToolTip(ga);
 	}
 
 	@Override

@@ -36,6 +36,6 @@ public class LvglPreferencePage extends FieldEditorPreferencePage implements IWo
 				"License Header:",
 				getFieldEditorParent());
 		licenseEditor.setEmptyStringAllowed(true);
-		addFieldEditor(licenseEditor);
+		addField(licenseEditor);
 	}
 }
