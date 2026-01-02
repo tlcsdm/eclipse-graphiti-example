@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/com.tlcsdm.eclipse.graphiti.demo.feature_1.0.0.qualifier.jar" id="com.tlcsdm.eclipse.graphiti.demo.feature" version="1.0.0.qualifier">
+      <category name="com.tlcsdm.eclipse.graphiti.demo.category"/>
+   </feature>
+   <category-def name="com.tlcsdm.eclipse.graphiti.demo.category" label="LVGL UI Designer">
+      <description>
+         LVGL UI Designer - A drag-and-drop UI designer for LVGL based on Eclipse Graphiti.
+      </description>
+   </category-def>
+</site>

@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <!-- Graphiti Diagram Type Provider -->
+   <extension
+         point="org.eclipse.graphiti.ui.diagramTypeProviders">
+      <diagramTypeProvider
+            class="com.tlcsdm.eclipse.graphiti.demo.diagram.LvglDiagramTypeProvider"
+            id="com.tlcsdm.eclipse.graphiti.demo.diagramTypeProvider"
+            name="LVGL UI Diagram Type Provider">
+         <diagramType
+               id="com.tlcsdm.eclipse.graphiti.demo.LvglDiagram">
+         </diagramType>
+      </diagramTypeProvider>
+   </extension>
+
+   <!-- Graphiti Diagram Type -->
+   <extension
+         point="org.eclipse.graphiti.ui.diagramTypes">
+      <diagramType
+            description="LVGL UI Diagram for designing embedded UI"
+            id="com.tlcsdm.eclipse.graphiti.demo.LvglDiagram"
+            name="LVGL UI Diagram"
+            type="lvglDiagram">
+      </diagramType>
+   </extension>
+
+   <!-- Graphiti Image Provider -->
+   <extension
+         point="org.eclipse.graphiti.ui.imageProviders">
+      <imageProvider
+            class="com.tlcsdm.eclipse.graphiti.demo.diagram.LvglImageProvider"
+            id="com.tlcsdm.eclipse.graphiti.demo.imageProvider">
+      </imageProvider>
+   </extension>
+
+   <!-- New Wizard -->
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <wizard
+            category="com.tlcsdm.eclipse.graphiti.demo.category"
+            class="com.tlcsdm.eclipse.graphiti.demo.wizard.NewLvglDiagramWizard"
+            icon="icons/sample.png"
+            id="com.tlcsdm.eclipse.graphiti.demo.wizard.newDiagram"
+            name="New LVGL UI Diagram">
+      </wizard>
+      <category
+            id="com.tlcsdm.eclipse.graphiti.demo.category"
+            name="LVGL UI Designer">
+      </category>
+   </extension>
+
+   <!-- Menu Contributions -->
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            allPopups="false"
+            locationURI="toolbar:org.eclipse.ui.main.toolbar">
+         <toolbar
+               id="com.tlcsdm.eclipse.graphiti.demo.toolbar">
+            <command
+                  commandId="com.tlcsdm.eclipse.graphiti.demo.commands.generate"
+                  icon="icons/generate.png"
+                  id="generateButton"
+                  label="Generate C Code"
+                  style="push"
+                  tooltip="Generate LVGL C Code from Diagram">
+            </command>
+         </toolbar>
+      </menuContribution>
+      <menuContribution
+            allPopups="false"
+            locationURI="popup:org.eclipse.ui.popup.any?after=additions">
+         <command
+               commandId="com.tlcsdm.eclipse.graphiti.demo.commands.generateFromFile"
+               icon="icons/generate.png"
+               label="Generate LVGL C Code"
+               style="push"
+               tooltip="Generate LVGL C Code from this diagram">
+            <visibleWhen
+                  checkEnabled="false">
+               <iterate
+                     ifEmpty="false"
+                     operator="and">
+                  <adapt
+                        type="org.eclipse.core.resources.IFile">
+                     <test
+                           property="org.eclipse.core.resources.name"
+                           value="*.graphxml">
+                     </test>
+                  </adapt>
+               </iterate>
+            </visibleWhen>
+         </command>
+      </menuContribution>
+   </extension>
+
+   <!-- Commands -->
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            id="com.tlcsdm.eclipse.graphiti.demo.commands.generate"
+            name="Generate C Code">
+      </command>
+      <command
+            id="com.tlcsdm.eclipse.graphiti.demo.commands.generateFromFile"
+            name="Generate LVGL C Code from File">
+      </command>
+   </extension>
+
+   <!-- Handlers -->
+   <extension
+         point="org.eclipse.ui.handlers">
+      <handler
+            commandId="com.tlcsdm.eclipse.graphiti.demo.commands.generate"
+            class="com.tlcsdm.eclipse.graphiti.demo.handler.GenerateCodeHandler">
+      </handler>
+      <handler
+            commandId="com.tlcsdm.eclipse.graphiti.demo.commands.generateFromFile"
+            class="com.tlcsdm.eclipse.graphiti.demo.handler.GenerateCodeFromFileHandler">
+      </handler>
+   </extension>
+
+   <!-- Preference Pages -->
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="com.tlcsdm.eclipse.graphiti.demo.preferences.LvglPreferencePage"
+            id="com.tlcsdm.eclipse.graphiti.demo.preferences"
+            name="LVGL UI Designer">
+      </page>
+   </extension>
+
+   <!-- Preference Initializer -->
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="com.tlcsdm.eclipse.graphiti.demo.preferences.LvglPreferenceInitializer">
+      </initializer>
+   </extension>
+</plugin>
