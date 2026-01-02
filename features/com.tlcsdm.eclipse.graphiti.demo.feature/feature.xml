@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="com.tlcsdm.eclipse.graphiti.demo.feature"
+      label="LVGL UI Designer Feature"
+      version="1.0.0.qualifier"
+      provider-name="Tlcsdm">
+
+   <description url="https://github.com/tlcsdm/eclipse-graphiti-example">
+      LVGL UI Designer - A drag-and-drop UI designer for LVGL based on Eclipse Graphiti.
+   </description>
+
+   <copyright>
+      Copyright (c) 2025 Tlcsdm. All rights reserved.
+   </copyright>
+
+   <license url="https://www.eclipse.org/legal/epl-v20.html">
+      Eclipse Public License - v 2.0
+   </license>
+
+   <plugin
+         id="com.tlcsdm.eclipse.graphiti.demo"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+</feature>

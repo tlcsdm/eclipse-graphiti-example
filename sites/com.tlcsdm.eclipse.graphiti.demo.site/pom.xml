@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.tlcsdm.eclipse.graphiti</groupId>
+    <artifactId>sites</artifactId>
+    <version>1.0.0</version>
+  </parent>
+  <artifactId>com.tlcsdm.eclipse.graphiti.demo.site</artifactId>
+  <packaging>eclipse-repository</packaging>
+  <name>Eclipse Graphiti LVGL Demo Update Site</name>
+</project>
