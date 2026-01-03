@@ -98,137 +98,137 @@ public class AddLvglWidgetFeature extends AbstractAddFeature {
 			LvglWidget widget, int x, int y, int width, int height) {
 
 		switch (widget.getWidgetType()) {
-			case BUTTON:
-				RoundedRectangle buttonRect = gaService.createRoundedRectangle(containerShape, 8, 8);
-				buttonRect.setBackground(manageColor(getColorFromInt(widget.getBgColor())));
-				buttonRect.setForeground(manageColor(BORDER_COLOR));
-				buttonRect.setLineWidth(2);
-				return buttonRect;
+		case BUTTON:
+			RoundedRectangle buttonRect = gaService.createRoundedRectangle(containerShape, 8, 8);
+			buttonRect.setBackground(manageColor(getColorFromInt(widget.getBgColor())));
+			buttonRect.setForeground(manageColor(BORDER_COLOR));
+			buttonRect.setLineWidth(2);
+			return buttonRect;
 
-			case LABEL:
-				Rectangle labelRect = gaService.createRectangle(containerShape);
-				labelRect.setBackground(manageColor(getColorFromInt(widget.getBgColor())));
-				labelRect.setForeground(manageColor(BORDER_COLOR));
-				labelRect.setLineWidth(1);
-				labelRect.setLineVisible(false);
-				labelRect.setFilled(false);
-				return labelRect;
+		case LABEL:
+			Rectangle labelRect = gaService.createRectangle(containerShape);
+			labelRect.setBackground(manageColor(getColorFromInt(widget.getBgColor())));
+			labelRect.setForeground(manageColor(BORDER_COLOR));
+			labelRect.setLineWidth(1);
+			labelRect.setLineVisible(false);
+			labelRect.setFilled(false);
+			return labelRect;
 
-			case SLIDER:
-			case BAR:
-				RoundedRectangle sliderRect = gaService.createRoundedRectangle(containerShape, 4, 4);
-				sliderRect.setBackground(manageColor(SLIDER_BG));
-				sliderRect.setForeground(manageColor(BORDER_COLOR));
-				sliderRect.setLineWidth(1);
-				return sliderRect;
+		case SLIDER:
+		case BAR:
+			RoundedRectangle sliderRect = gaService.createRoundedRectangle(containerShape, 4, 4);
+			sliderRect.setBackground(manageColor(SLIDER_BG));
+			sliderRect.setForeground(manageColor(BORDER_COLOR));
+			sliderRect.setLineWidth(1);
+			return sliderRect;
 
-			case SWITCH:
-				RoundedRectangle switchRect = gaService.createRoundedRectangle(containerShape, height / 2, height / 2);
-				switchRect.setBackground(manageColor(SLIDER_BG));
-				switchRect.setForeground(manageColor(BORDER_COLOR));
-				switchRect.setLineWidth(2);
-				return switchRect;
+		case SWITCH:
+			RoundedRectangle switchRect = gaService.createRoundedRectangle(containerShape, height / 2, height / 2);
+			switchRect.setBackground(manageColor(SLIDER_BG));
+			switchRect.setForeground(manageColor(BORDER_COLOR));
+			switchRect.setLineWidth(2);
+			return switchRect;
 
-			case CHECKBOX:
-				Rectangle checkboxRect = gaService.createRectangle(containerShape);
-				checkboxRect.setBackground(manageColor(CONTAINER_BG));
-				checkboxRect.setForeground(manageColor(BORDER_COLOR));
-				checkboxRect.setLineWidth(2);
-				return checkboxRect;
+		case CHECKBOX:
+			Rectangle checkboxRect = gaService.createRectangle(containerShape);
+			checkboxRect.setBackground(manageColor(CONTAINER_BG));
+			checkboxRect.setForeground(manageColor(BORDER_COLOR));
+			checkboxRect.setLineWidth(2);
+			return checkboxRect;
 
-			case DROPDOWN:
-				RoundedRectangle dropdownRect = gaService.createRoundedRectangle(containerShape, 4, 4);
-				dropdownRect.setBackground(manageColor(CONTAINER_BG));
-				dropdownRect.setForeground(manageColor(BORDER_COLOR));
-				dropdownRect.setLineWidth(1);
-				return dropdownRect;
+		case DROPDOWN:
+			RoundedRectangle dropdownRect = gaService.createRoundedRectangle(containerShape, 4, 4);
+			dropdownRect.setBackground(manageColor(CONTAINER_BG));
+			dropdownRect.setForeground(manageColor(BORDER_COLOR));
+			dropdownRect.setLineWidth(1);
+			return dropdownRect;
 
-			case TEXTAREA:
-				Rectangle textareaRect = gaService.createRectangle(containerShape);
-				textareaRect.setBackground(manageColor(CONTAINER_BG));
-				textareaRect.setForeground(manageColor(BORDER_COLOR));
-				textareaRect.setLineWidth(1);
-				return textareaRect;
+		case TEXTAREA:
+			Rectangle textareaRect = gaService.createRectangle(containerShape);
+			textareaRect.setBackground(manageColor(CONTAINER_BG));
+			textareaRect.setForeground(manageColor(BORDER_COLOR));
+			textareaRect.setLineWidth(1);
+			return textareaRect;
 
-			case IMAGE:
-				Rectangle imageRect = gaService.createRectangle(containerShape);
-				imageRect.setBackground(manageColor(SLIDER_BG));
-				imageRect.setForeground(manageColor(BORDER_COLOR));
-				imageRect.setLineWidth(1);
-				return imageRect;
+		case IMAGE:
+			Rectangle imageRect = gaService.createRectangle(containerShape);
+			imageRect.setBackground(manageColor(SLIDER_BG));
+			imageRect.setForeground(manageColor(BORDER_COLOR));
+			imageRect.setLineWidth(1);
+			return imageRect;
 
-			case ARC:
-				RoundedRectangle arcRect = gaService.createRoundedRectangle(containerShape, width / 2, height / 2);
-				arcRect.setBackground(manageColor(CONTAINER_BG));
-				arcRect.setForeground(manageColor(BORDER_COLOR));
-				arcRect.setLineWidth(2);
-				arcRect.setFilled(false);
-				return arcRect;
+		case ARC:
+			RoundedRectangle arcRect = gaService.createRoundedRectangle(containerShape, width / 2, height / 2);
+			arcRect.setBackground(manageColor(CONTAINER_BG));
+			arcRect.setForeground(manageColor(BORDER_COLOR));
+			arcRect.setLineWidth(2);
+			arcRect.setFilled(false);
+			return arcRect;
 
-			case CONTAINER:
-			case TABVIEW:
-			case LIST:
-			case TILEVIEW:
-			case MENU:
-			case WIN:
-				Rectangle containerRect = gaService.createRectangle(containerShape);
-				containerRect.setBackground(manageColor(CONTAINER_BG));
-				containerRect.setForeground(manageColor(BORDER_COLOR));
-				containerRect.setLineWidth(2);
-				return containerRect;
+		case CONTAINER:
+		case TABVIEW:
+		case LIST:
+		case TILEVIEW:
+		case MENU:
+		case WIN:
+			Rectangle containerRect = gaService.createRectangle(containerShape);
+			containerRect.setBackground(manageColor(CONTAINER_BG));
+			containerRect.setForeground(manageColor(BORDER_COLOR));
+			containerRect.setLineWidth(2);
+			return containerRect;
 
-			case CHART:
-			case TABLE:
-			case CALENDAR:
-				Rectangle chartRect = gaService.createRectangle(containerShape);
-				chartRect.setBackground(manageColor(CONTAINER_BG));
-				chartRect.setForeground(manageColor(BORDER_COLOR));
-				chartRect.setLineWidth(1);
-				return chartRect;
+		case CHART:
+		case TABLE:
+		case CALENDAR:
+			Rectangle chartRect = gaService.createRectangle(containerShape);
+			chartRect.setBackground(manageColor(CONTAINER_BG));
+			chartRect.setForeground(manageColor(BORDER_COLOR));
+			chartRect.setLineWidth(1);
+			return chartRect;
 
-			case SPINNER:
-				RoundedRectangle spinnerRect = gaService.createRoundedRectangle(containerShape, width / 2, height / 2);
-				spinnerRect.setBackground(manageColor(SLIDER_BG));
-				spinnerRect.setForeground(manageColor(BORDER_COLOR));
-				spinnerRect.setLineWidth(2);
-				return spinnerRect;
+		case SPINNER:
+			RoundedRectangle spinnerRect = gaService.createRoundedRectangle(containerShape, width / 2, height / 2);
+			spinnerRect.setBackground(manageColor(SLIDER_BG));
+			spinnerRect.setForeground(manageColor(BORDER_COLOR));
+			spinnerRect.setLineWidth(2);
+			return spinnerRect;
 
-			case LED:
-				RoundedRectangle ledRect = gaService.createRoundedRectangle(containerShape, width / 2, height / 2);
-				ledRect.setBackground(manageColor(IColorConstant.GREEN));
-				ledRect.setForeground(manageColor(BORDER_COLOR));
-				ledRect.setLineWidth(2);
-				return ledRect;
+		case LED:
+			RoundedRectangle ledRect = gaService.createRoundedRectangle(containerShape, width / 2, height / 2);
+			ledRect.setBackground(manageColor(IColorConstant.GREEN));
+			ledRect.setForeground(manageColor(BORDER_COLOR));
+			ledRect.setLineWidth(2);
+			return ledRect;
 
-			case KEYBOARD:
-			case BUTTONMATRIX:
-				Rectangle keyboardRect = gaService.createRectangle(containerShape);
-				keyboardRect.setBackground(manageColor(SLIDER_BG));
-				keyboardRect.setForeground(manageColor(BORDER_COLOR));
-				keyboardRect.setLineWidth(1);
-				return keyboardRect;
+		case KEYBOARD:
+		case BUTTONMATRIX:
+			Rectangle keyboardRect = gaService.createRectangle(containerShape);
+			keyboardRect.setBackground(manageColor(SLIDER_BG));
+			keyboardRect.setForeground(manageColor(BORDER_COLOR));
+			keyboardRect.setLineWidth(1);
+			return keyboardRect;
 
-			case ROLLER:
-			case SPINBOX:
-				RoundedRectangle rollerRect = gaService.createRoundedRectangle(containerShape, 4, 4);
-				rollerRect.setBackground(manageColor(CONTAINER_BG));
-				rollerRect.setForeground(manageColor(BORDER_COLOR));
-				rollerRect.setLineWidth(1);
-				return rollerRect;
+		case ROLLER:
+		case SPINBOX:
+			RoundedRectangle rollerRect = gaService.createRoundedRectangle(containerShape, 4, 4);
+			rollerRect.setBackground(manageColor(CONTAINER_BG));
+			rollerRect.setForeground(manageColor(BORDER_COLOR));
+			rollerRect.setLineWidth(1);
+			return rollerRect;
 
-			case MSGBOX:
-				RoundedRectangle msgboxRect = gaService.createRoundedRectangle(containerShape, 8, 8);
-				msgboxRect.setBackground(manageColor(CONTAINER_BG));
-				msgboxRect.setForeground(manageColor(BORDER_COLOR));
-				msgboxRect.setLineWidth(2);
-				return msgboxRect;
+		case MSGBOX:
+			RoundedRectangle msgboxRect = gaService.createRoundedRectangle(containerShape, 8, 8);
+			msgboxRect.setBackground(manageColor(CONTAINER_BG));
+			msgboxRect.setForeground(manageColor(BORDER_COLOR));
+			msgboxRect.setLineWidth(2);
+			return msgboxRect;
 
-			default:
-				Rectangle defaultRect = gaService.createRectangle(containerShape);
-				defaultRect.setBackground(manageColor(CONTAINER_BG));
-				defaultRect.setForeground(manageColor(BORDER_COLOR));
-				defaultRect.setLineWidth(1);
-				return defaultRect;
+		default:
+			Rectangle defaultRect = gaService.createRectangle(containerShape);
+			defaultRect.setBackground(manageColor(CONTAINER_BG));
+			defaultRect.setForeground(manageColor(BORDER_COLOR));
+			defaultRect.setLineWidth(1);
+			return defaultRect;
 		}
 	}
 
