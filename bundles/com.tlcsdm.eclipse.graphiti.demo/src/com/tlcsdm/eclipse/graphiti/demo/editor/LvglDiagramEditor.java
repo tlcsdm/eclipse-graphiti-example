@@ -99,8 +99,9 @@ public class LvglDiagramEditor extends DiagramEditor {
 		// Create diagram filename by replacing the .graphxml extension with .diagram
 		String graphxmlName = file.getName();
 		String diagramFileName;
-		if (graphxmlName.endsWith(".graphxml")) {
-			diagramFileName = graphxmlName.substring(0, graphxmlName.length() - 9) + ".diagram";
+		String graphxmlExtension = ".graphxml";
+		if (graphxmlName.endsWith(graphxmlExtension)) {
+			diagramFileName = graphxmlName.substring(0, graphxmlName.length() - graphxmlExtension.length()) + ".diagram";
 		} else {
 			diagramFileName = graphxmlName + ".diagram";
 		}

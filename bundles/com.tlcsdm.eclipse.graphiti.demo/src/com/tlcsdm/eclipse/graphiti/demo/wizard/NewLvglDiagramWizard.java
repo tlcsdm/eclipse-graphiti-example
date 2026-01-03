@@ -108,8 +108,9 @@ public class NewLvglDiagramWizard extends Wizard implements INewWizard {
 			// Create diagram filename by replacing the .graphxml extension with .diagram
 			String graphxmlName = graphxmlFile.getName();
 			String diagramFileName;
-			if (graphxmlName.endsWith("." + FILE_EXTENSION)) {
-				diagramFileName = graphxmlName.substring(0, graphxmlName.length() - FILE_EXTENSION.length() - 1) + ".diagram";
+			String fullExtension = "." + FILE_EXTENSION;
+			if (graphxmlName.endsWith(fullExtension)) {
+				diagramFileName = graphxmlName.substring(0, graphxmlName.length() - fullExtension.length()) + ".diagram";
 			} else {
 				diagramFileName = graphxmlName + ".diagram";
 			}
