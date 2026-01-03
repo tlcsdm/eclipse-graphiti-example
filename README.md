@@ -87,6 +87,11 @@ mvn clean verify
 4. 在属性视图中编辑控件属性
 5. 点击工具栏的 "Generate C Code" 按钮生成代码
 
+**注意事项:**
+- 每个 `.graphxml` 文件都会有一个对应的 `.diagram` 文件自动生成，用于存储 Graphiti 图形编辑器的元数据
+- `.diagram` 文件已添加到 `.gitignore`，不需要提交到版本控制系统
+- 如果打开现有的 `.graphxml` 文件时出现 "No Diagram found for URI" 错误，请删除对应的 `.diagram` 文件，编辑器会自动重新创建
+
 ## 生成的代码示例
 
 **头文件 (screen.h):**
