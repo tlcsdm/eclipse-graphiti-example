@@ -117,7 +117,7 @@ public class GenerateLvglCodeFeature extends AbstractCustomFeature {
 
 	private IFile getDiagramFile() {
 		// Try to get the diagram file from the diagram's resource
-		Diagram diagram = getDiagram();
+		Diagram diagram = getFeatureProvider().getDiagramTypeProvider().getDiagram();
 		if (diagram != null && diagram.eResource() != null) {
 			org.eclipse.emf.common.util.URI uri = diagram.eResource().getURI();
 			if (uri.isPlatformResource()) {
