@@ -37,14 +37,15 @@ import com.tlcsdm.eclipse.graphiti.demo.util.ConsoleUtil;
 /**
  * Graphiti-based diagram editor for LVGL UI design.
  * This editor is embedded within the multi-page editor.
+ * Uses in-memory diagram model - no .diagram file is created.
  */
 public class LvglDiagramEditor extends DiagramEditor {
 
 	/** The LVGL screen model */
 	private LvglScreen screen;
 
-	/** The diagram file */
-	private IFile diagramFile;
+	/** The .graphxml file (the only file used) */
+	private IFile graphxmlFile;
 
 	public LvglDiagramEditor() {
 		super();
@@ -55,13 +56,13 @@ public class LvglDiagramEditor extends DiagramEditor {
 		// Handle IFileEditorInput by converting to DiagramEditorInput
 		if (input instanceof IFileEditorInput) {
 			IFileEditorInput fileInput = (IFileEditorInput) input;
-			this.diagramFile = fileInput.getFile();
+			this.graphxmlFile = fileInput.getFile();
 
-			// Load the screen model from the file
+			// Load the screen model from the .graphxml file
 			loadScreen();
 
-			// Create a DiagramEditorInput from the file
-			input = createDiagramEditorInput(fileInput);
+			// Create an in-memory DiagramEditorInput (no .diagram file needed)
+			input = createInMemoryDiagramEditorInput(fileInput);
 		}
 
 		super.init(site, input);
@@ -72,15 +73,15 @@ public class LvglDiagramEditor extends DiagramEditor {
 	}
 
 	/**
-	 * Loads the screen model from the diagram file.
+	 * Loads the screen model from the .graphxml file.
 	 */
 	private void loadScreen() {
-		if (diagramFile == null || !diagramFile.exists()) {
+		if (graphxmlFile == null || !graphxmlFile.exists()) {
 			screen = LvglXmlSerializer.createDefaultScreen();
 			return;
 		}
 
-		try (InputStream is = diagramFile.getContents()) {
+		try (InputStream is = graphxmlFile.getContents()) {
 			if (is.available() > 0) {
 				LvglXmlSerializer serializer = new LvglXmlSerializer();
 				screen = serializer.load(is);
@@ -94,69 +95,35 @@ public class LvglDiagramEditor extends DiagramEditor {
 	}
 
 	/**
-	 * Creates a DiagramEditorInput from an IFileEditorInput.
-	 * The diagram is stored in a separate .diagram file alongside the .graphxml file.
+	 * Creates an in-memory DiagramEditorInput from an IFileEditorInput.
+	 * The diagram model is stored in memory only - no .diagram file is created.
 	 */
-	private DiagramEditorInput createDiagramEditorInput(IFileEditorInput fileInput) {
+	private DiagramEditorInput createInMemoryDiagramEditorInput(IFileEditorInput fileInput) {
 		IFile file = fileInput.getFile();
 		
-		// Create diagram filename by replacing the .graphxml extension with .diagram
-		String graphxmlName = file.getName();
-		String diagramFileName;
-		String graphxmlExtension = ".graphxml";
-		if (graphxmlName.endsWith(graphxmlExtension)) {
-			diagramFileName = graphxmlName.substring(0, graphxmlName.length() - graphxmlExtension.length()) + ".diagram";
-		} else {
-			diagramFileName = graphxmlName + ".diagram";
-		}
-		
-		IFile diagramFile = file.getParent().getFile(new org.eclipse.core.runtime.Path(diagramFileName));
-		
-		URI diagramUri = URI.createPlatformResourceURI(diagramFile.getFullPath().toString(), true);
+		// Use a virtual URI for the in-memory diagram resource
+		// This prevents any file system access for the diagram model
+		URI diagramUri = URI.createURI("memory://" + file.getFullPath().toString() + ".diagram");
 
 		// Create a resource set
 		ResourceSet resourceSet = new ResourceSetImpl();
 
-		// Try to load existing diagram resource, or create a new one
-		Resource resource = null;
-		Diagram diagram = null;
+		// Create a new in-memory diagram resource
+		Resource resource = resourceSet.createResource(diagramUri);
+		Diagram diagram = PictogramsFactory.eINSTANCE.createDiagram();
+		diagram.setDiagramTypeId(LvglDiagramTypeProvider.DIAGRAM_TYPE_ID);
+		diagram.setName(file.getName());
+		diagram.setSnapToGrid(true);
+		diagram.setGridUnit(10);
 		
-		if (diagramFile.exists()) {
-			try {
-				resource = resourceSet.getResource(diagramUri, true);
-				if (!resource.getContents().isEmpty() && resource.getContents().get(0) instanceof Diagram) {
-					diagram = (Diagram) resource.getContents().get(0);
-				}
-			} catch (Exception e) {
-				ConsoleUtil.printError("Failed to load existing diagram: " + e.getMessage());
-			}
-		}
-		
-		if (diagram == null) {
-			// Create a new diagram and resource
-			resource = resourceSet.createResource(diagramUri);
-			diagram = PictogramsFactory.eINSTANCE.createDiagram();
-			diagram.setDiagramTypeId(LvglDiagramTypeProvider.DIAGRAM_TYPE_ID);
-			diagram.setName(file.getName());
-			diagram.setSnapToGrid(true);
-			diagram.setGridUnit(10);
-			
-			// Initialize GraphicsAlgorithm with background color (required by Graphiti GridLayer)
-			IGaService gaService = Graphiti.getGaService();
-			Rectangle rect = gaService.createRectangle(diagram);
-			rect.setForeground(gaService.manageColor(diagram, IColorConstant.BLACK));
-			rect.setBackground(gaService.manageColor(diagram, IColorConstant.WHITE));
+		// Initialize GraphicsAlgorithm with background color (required by Graphiti GridLayer)
+		IGaService gaService = Graphiti.getGaService();
+		Rectangle rect = gaService.createRectangle(diagram);
+		rect.setForeground(gaService.manageColor(diagram, IColorConstant.BLACK));
+		rect.setBackground(gaService.manageColor(diagram, IColorConstant.WHITE));
 
-			// Add to resource
-			resource.getContents().add(diagram);
-			
-			// Save the diagram resource
-			try {
-				resource.save(null);
-			} catch (Exception e) {
-				ConsoleUtil.printError("Failed to save diagram resource: " + e.getMessage());
-			}
-		}
+		// Add to resource
+		resource.getContents().add(diagram);
 
 		// Create the editor input with correct signature (Diagram, String providerId)
 		return DiagramEditorInput.createEditorInput(diagram, LvglDiagramTypeProvider.PROVIDER_ID);
@@ -172,11 +139,10 @@ public class LvglDiagramEditor extends DiagramEditor {
 
 	@Override
 	public void doSave(IProgressMonitor monitor) {
-		// First call parent to handle Graphiti diagram saving
-		super.doSave(monitor);
-
-		// Then save our custom XML model
-		if (screen == null || diagramFile == null) {
+		// Only save the .graphxml file - no .diagram file
+		// Skip parent's doSave as it tries to save the diagram resource
+		
+		if (screen == null || graphxmlFile == null) {
 			return;
 		}
 
@@ -186,13 +152,16 @@ public class LvglDiagramEditor extends DiagramEditor {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			serializer.save(screen, baos);
 
-			// Write to file
+			// Write to .graphxml file
 			ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-			if (diagramFile.exists()) {
-				diagramFile.setContents(bais, true, true, monitor);
+			if (graphxmlFile.exists()) {
+				graphxmlFile.setContents(bais, true, true, monitor);
 			} else {
-				diagramFile.create(bais, true, monitor);
+				graphxmlFile.create(bais, true, monitor);
 			}
+			
+			// Mark the command stack as saved to clear the dirty flag
+			getEditingDomain().getCommandStack().flush();
 		} catch (Exception e) {
 			ConsoleUtil.printError("Failed to save diagram: " + e.getMessage());
 		}
@@ -227,17 +196,17 @@ public class LvglDiagramEditor extends DiagramEditor {
 	}
 
 	/**
-	 * Gets the diagram file.
+	 * Gets the .graphxml file.
 	 */
 	public IFile getDiagramFile() {
-		return diagramFile;
+		return graphxmlFile;
 	}
 
 	@Override
 	@SuppressWarnings("rawtypes")
 	public Object getAdapter(Class type) {
 		if (type == IFile.class) {
-			return diagramFile;
+			return graphxmlFile;
 		}
 		
 		// Check if the editor is fully initialized before delegating to parent

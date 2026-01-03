@@ -17,7 +17,9 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
-import org.eclipse.graphiti.mm.pictograms.Diagram;
+import org.eclipse.graphiti.ui.editor.DiagramEditor;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.PlatformUI;
 
 import com.tlcsdm.eclipse.graphiti.demo.Activator;
 import com.tlcsdm.eclipse.graphiti.demo.generator.LvglCodeGenerator;
@@ -55,16 +57,32 @@ public class GenerateLvglCodeFeature extends AbstractCustomFeature {
 
 	@Override
 	public void execute(ICustomContext context) {
-		// Get the screen from the diagram
-		Diagram diagram = getFeatureProvider().getDiagramTypeProvider().getDiagram();
-		Object bo = getFeatureProvider().getBusinessObjectForPictogramElement(diagram);
+		// Get the screen and file from the active editor
+		LvglScreen screen = null;
+		IFile graphxmlFile = null;
+
+		// Try to get from multi-page editor first
+		IEditorPart activeEditor = PlatformUI.getWorkbench().getActiveWorkbenchWindow()
+				.getActivePage().getActiveEditor();
 		
-		if (!(bo instanceof LvglScreen)) {
-			ConsoleUtil.printError("Could not find LVGL screen data in the diagram.");
-			return;
+		if (activeEditor instanceof LvglMultiPageEditor) {
+			LvglMultiPageEditor multiPageEditor = (LvglMultiPageEditor) activeEditor;
+			screen = multiPageEditor.getScreen();
+			graphxmlFile = multiPageEditor.getDiagramFile();
+		} else if (activeEditor instanceof DiagramEditor) {
+			// Try to get from LvglDiagramEditor
+			DiagramEditor diagramEditor = (DiagramEditor) activeEditor;
+			if (diagramEditor instanceof LvglDiagramEditor) {
+				LvglDiagramEditor lvglEditor = (LvglDiagramEditor) diagramEditor;
+				screen = lvglEditor.getScreen();
+				graphxmlFile = lvglEditor.getDiagramFile();
+			}
 		}
 
-		LvglScreen screen = (LvglScreen) bo;
+		if (screen == null) {
+			ConsoleUtil.printError("Could not find LVGL screen data in the editor.");
+			return;
+		}
 
 		if (screen.getWidgets().isEmpty()) {
 			ConsoleUtil.println("Warning: The screen is empty. Please add some widgets first.");
@@ -72,15 +90,13 @@ public class GenerateLvglCodeFeature extends AbstractCustomFeature {
 		}
 
 		try {
-			// Get diagram file from the multi-page editor or adapter
-			IFile diagramFile = getDiagramFile();
-			if (diagramFile == null) {
-				ConsoleUtil.printError("Could not determine the diagram file location.");
+			if (graphxmlFile == null) {
+				ConsoleUtil.printError("Could not determine the .graphxml file location.");
 				return;
 			}
 
-			IContainer parentFolder = diagramFile.getParent();
-			String baseName = diagramFile.getName();
+			IContainer parentFolder = graphxmlFile.getParent();
+			String baseName = graphxmlFile.getName();
 			if (baseName.endsWith(".graphxml")) {
 				baseName = baseName.substring(0, baseName.length() - 9);
 			}
@@ -113,21 +129,6 @@ public class GenerateLvglCodeFeature extends AbstractCustomFeature {
 		} catch (Exception e) {
 			ConsoleUtil.printError("Failed to generate code: " + e.getMessage());
 		}
-	}
-
-	private IFile getDiagramFile() {
-		// Try to get the diagram file from the diagram's resource
-		Diagram diagram = getFeatureProvider().getDiagramTypeProvider().getDiagram();
-		if (diagram != null && diagram.eResource() != null) {
-			org.eclipse.emf.common.util.URI uri = diagram.eResource().getURI();
-			if (uri.isPlatformResource()) {
-				String platformString = uri.toPlatformString(true);
-				org.eclipse.core.resources.IWorkspaceRoot root = 
-					org.eclipse.core.resources.ResourcesPlugin.getWorkspace().getRoot();
-				return root.getFile(new Path(platformString));
-			}
-		}
-		return null;
 	}
 
 	private void writeFile(IFile file, String content) throws Exception {
