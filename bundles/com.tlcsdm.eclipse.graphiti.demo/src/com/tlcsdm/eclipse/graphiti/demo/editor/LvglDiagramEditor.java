@@ -195,7 +195,7 @@ public class LvglDiagramEditor extends DiagramEditor {
 		}
 		
 		// Check if the editor is fully initialized before delegating to parent
-		// The parent's getAdapter may call getEditDomain() which is only set after createPartControl()
+		// The parent's getAdapter may call getEditDomain() which is only set during the editor initialization lifecycle
 		if (getEditDomain() == null) {
 			// Editor not fully initialized yet, return null to avoid NullPointerException
 			return null;
