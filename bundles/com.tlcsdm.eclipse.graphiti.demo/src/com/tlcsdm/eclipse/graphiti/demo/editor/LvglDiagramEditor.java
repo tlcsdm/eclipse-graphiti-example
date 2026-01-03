@@ -126,6 +126,10 @@ public class LvglDiagramEditor extends DiagramEditor {
 
 	@Override
 	public void doSave(IProgressMonitor monitor) {
+		// First call parent to handle Graphiti diagram saving
+		super.doSave(monitor);
+
+		// Then save our custom XML model
 		if (screen == null || diagramFile == null) {
 			return;
 		}
@@ -143,10 +147,6 @@ public class LvglDiagramEditor extends DiagramEditor {
 			} else {
 				diagramFile.create(bais, true, monitor);
 			}
-
-			// Mark save location for dirty tracking
-			getCommandStack().markSaveLocation();
-			firePropertyChange(PROP_DIRTY);
 		} catch (Exception e) {
 			ConsoleUtil.printError("Failed to save diagram: " + e.getMessage());
 		}
@@ -160,11 +160,6 @@ public class LvglDiagramEditor extends DiagramEditor {
 	@Override
 	public boolean isSaveAsAllowed() {
 		return false;
-	}
-
-	@Override
-	public boolean isDirty() {
-		return getCommandStack().isDirty();
 	}
 
 	/**
@@ -193,6 +188,7 @@ public class LvglDiagramEditor extends DiagramEditor {
 	}
 
 	@Override
+	@SuppressWarnings("rawtypes")
 	public Object getAdapter(Class type) {
 		if (type == IFile.class) {
 			return diagramFile;
