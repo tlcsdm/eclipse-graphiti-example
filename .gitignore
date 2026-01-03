@@ -15,3 +15,5 @@ pom.tycho
 bin/
 **/.settings/org.sonarlint.eclipse.core.prefs
 tests/**/screenshots/*
+# Auto-generated Graphiti diagram files
+*.diagram

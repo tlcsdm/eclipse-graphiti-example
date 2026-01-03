@@ -91,26 +91,54 @@ public class LvglDiagramEditor extends DiagramEditor {
 
 	/**
 	 * Creates a DiagramEditorInput from an IFileEditorInput.
+	 * The diagram is stored in a separate .diagram file alongside the .graphxml file.
 	 */
 	private DiagramEditorInput createDiagramEditorInput(IFileEditorInput fileInput) {
 		IFile file = fileInput.getFile();
-		URI uri = URI.createPlatformResourceURI(file.getFullPath().toString(), true);
+		
+		// Create a diagram file path by replacing .graphxml extension with .diagram
+		String diagramFileName = file.getName().replace(".graphxml", ".diagram");
+		IFile diagramFile = file.getParent().getFile(new org.eclipse.core.runtime.Path(diagramFileName));
+		
+		URI diagramUri = URI.createPlatformResourceURI(diagramFile.getFullPath().toString(), true);
 
 		// Create a resource set
 		ResourceSet resourceSet = new ResourceSetImpl();
 
-		// Create a new diagram resource
-		Resource resource = resourceSet.createResource(uri);
+		// Try to load existing diagram resource, or create a new one
+		Resource resource = null;
+		Diagram diagram = null;
+		
+		if (diagramFile.exists()) {
+			try {
+				resource = resourceSet.getResource(diagramUri, true);
+				if (!resource.getContents().isEmpty() && resource.getContents().get(0) instanceof Diagram) {
+					diagram = (Diagram) resource.getContents().get(0);
+				}
+			} catch (Exception e) {
+				ConsoleUtil.printError("Failed to load existing diagram: " + e.getMessage());
+			}
+		}
+		
+		if (diagram == null) {
+			// Create a new diagram and resource
+			resource = resourceSet.createResource(diagramUri);
+			diagram = PictogramsFactory.eINSTANCE.createDiagram();
+			diagram.setDiagramTypeId(LvglDiagramTypeProvider.DIAGRAM_TYPE_ID);
+			diagram.setName(file.getName());
+			diagram.setSnapToGrid(true);
+			diagram.setGridUnit(10);
 
-		// Create the diagram
-		Diagram diagram = PictogramsFactory.eINSTANCE.createDiagram();
-		diagram.setDiagramTypeId(LvglDiagramTypeProvider.DIAGRAM_TYPE_ID);
-		diagram.setName(file.getName());
-		diagram.setSnapToGrid(true);
-		diagram.setGridUnit(10);
-
-		// Add to resource
-		resource.getContents().add(diagram);
+			// Add to resource
+			resource.getContents().add(diagram);
+			
+			// Save the diagram resource
+			try {
+				resource.save(null);
+			} catch (Exception e) {
+				ConsoleUtil.printError("Failed to save diagram resource: " + e.getMessage());
+			}
+		}
 
 		// Create the editor input with correct signature (Diagram, String providerId)
 		return DiagramEditorInput.createEditorInput(diagram, LvglDiagramTypeProvider.DIAGRAM_TYPE_ID);

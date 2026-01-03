@@ -75,6 +75,9 @@ public class NewLvglDiagramWizard extends Wizard implements INewWizard {
 
 			InputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray());
 			diagramFile.setContents(inputStream, true, true, new NullProgressMonitor());
+			
+			// Create the accompanying .diagram file for Graphiti
+			createDiagramFile(diagramFile);
 
 			// Open the editor
 			openEditor(diagramFile);
@@ -83,6 +86,49 @@ public class NewLvglDiagramWizard extends Wizard implements INewWizard {
 		} catch (IOException | CoreException e) {
 			MessageDialog.openError(getShell(), "Error", "Failed to create diagram: " + e.getMessage());
 			return false;
+		}
+	}
+	
+	/**
+	 * Creates a .diagram file alongside the .graphxml file.
+	 * This file stores the Graphiti diagram model.
+	 */
+	private void createDiagramFile(IFile graphxmlFile) throws CoreException {
+		try {
+			String diagramFileName = graphxmlFile.getName().replace(".graphxml", ".diagram");
+			IFile diagramFile = graphxmlFile.getParent().getFile(new org.eclipse.core.runtime.Path(diagramFileName));
+			
+			if (!diagramFile.exists()) {
+				// Create an empty diagram EMF resource
+				org.eclipse.emf.common.util.URI diagramUri = org.eclipse.emf.common.util.URI.createPlatformResourceURI(
+						diagramFile.getFullPath().toString(), true);
+				
+				org.eclipse.emf.ecore.resource.ResourceSet resourceSet = new org.eclipse.emf.ecore.resource.impl.ResourceSetImpl();
+				org.eclipse.emf.ecore.resource.Resource resource = resourceSet.createResource(diagramUri);
+				
+				// Create a diagram
+				org.eclipse.graphiti.mm.pictograms.Diagram diagram = org.eclipse.graphiti.mm.pictograms.PictogramsFactory.eINSTANCE.createDiagram();
+				diagram.setDiagramTypeId("com.tlcsdm.eclipse.graphiti.demo.LvglDiagram");
+				diagram.setName(graphxmlFile.getName());
+				diagram.setSnapToGrid(true);
+				diagram.setGridUnit(10);
+				
+				resource.getContents().add(diagram);
+				
+				// Save the resource
+				ByteArrayOutputStream baos = new ByteArrayOutputStream();
+				resource.save(baos, null);
+				
+				// Create the file
+				ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+				diagramFile.create(bais, true, new NullProgressMonitor());
+			}
+		} catch (Exception e) {
+			throw new CoreException(new org.eclipse.core.runtime.Status(
+					org.eclipse.core.runtime.IStatus.ERROR,
+					"com.tlcsdm.eclipse.graphiti.demo",
+					"Failed to create diagram file: " + e.getMessage(),
+					e));
 		}
 	}
 
