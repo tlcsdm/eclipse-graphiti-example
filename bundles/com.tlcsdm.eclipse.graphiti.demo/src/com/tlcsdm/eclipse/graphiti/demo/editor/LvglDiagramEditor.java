@@ -21,7 +21,6 @@ import org.eclipse.graphiti.mm.pictograms.PictogramsFactory;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.graphiti.ui.editor.DiagramEditorInput;
 import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.PartInitException;
@@ -127,6 +126,10 @@ public class LvglDiagramEditor extends DiagramEditor {
 
 	@Override
 	public void doSave(IProgressMonitor monitor) {
+		// First call parent to handle Graphiti diagram saving
+		super.doSave(monitor);
+
+		// Then save our custom XML model
 		if (screen == null || diagramFile == null) {
 			return;
 		}
@@ -144,10 +147,6 @@ public class LvglDiagramEditor extends DiagramEditor {
 			} else {
 				diagramFile.create(bais, true, monitor);
 			}
-
-			// Mark save location for dirty tracking
-			getDiagramBehavior().getEditingDomain().getCommandStack().markSaveLocation();
-			firePropertyChange(IEditorPart.PROP_DIRTY);
 		} catch (Exception e) {
 			ConsoleUtil.printError("Failed to save diagram: " + e.getMessage());
 		}
@@ -163,10 +162,7 @@ public class LvglDiagramEditor extends DiagramEditor {
 		return false;
 	}
 
-	@Override
-	public boolean isDirty() {
-		return getDiagramBehavior().getEditingDomain().getCommandStack().isDirty();
-	}
+
 
 	/**
 	 * Gets the screen model.
