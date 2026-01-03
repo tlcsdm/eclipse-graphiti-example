@@ -23,7 +23,7 @@ import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.graphiti.ui.editor.DiagramEditorInput;
-import org.eclipse.graphiti.util.ColorConstant;
+import org.eclipse.graphiti.util.IColorConstant;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
@@ -144,8 +144,8 @@ public class LvglDiagramEditor extends DiagramEditor {
 			// Initialize GraphicsAlgorithm with background color (required by Graphiti GridLayer)
 			IGaService gaService = Graphiti.getGaService();
 			Rectangle rect = gaService.createRectangle(diagram);
-			rect.setForeground(gaService.manageColor(diagram, new ColorConstant(0, 0, 0)));
-			rect.setBackground(gaService.manageColor(diagram, new ColorConstant(255, 255, 255)));
+			rect.setForeground(gaService.manageColor(diagram, IColorConstant.BLACK));
+			rect.setBackground(gaService.manageColor(diagram, IColorConstant.WHITE));
 
 			// Add to resource
 			resource.getContents().add(diagram);

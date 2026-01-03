@@ -29,7 +29,7 @@ import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramsFactory;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
-import org.eclipse.graphiti.util.ColorConstant;
+import org.eclipse.graphiti.util.IColorConstant;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
@@ -139,8 +139,8 @@ public class NewLvglDiagramWizard extends Wizard implements INewWizard {
 				// Initialize GraphicsAlgorithm with background color (required by Graphiti GridLayer)
 				IGaService gaService = Graphiti.getGaService();
 				Rectangle rect = gaService.createRectangle(diagram);
-				rect.setForeground(gaService.manageColor(diagram, new ColorConstant(0, 0, 0)));
-				rect.setBackground(gaService.manageColor(diagram, new ColorConstant(255, 255, 255)));
+				rect.setForeground(gaService.manageColor(diagram, IColorConstant.BLACK));
+				rect.setBackground(gaService.manageColor(diagram, IColorConstant.WHITE));
 				
 				resource.getContents().add(diagram);
 				
