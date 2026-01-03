@@ -140,7 +140,7 @@ public class LvglDiagramEditor extends DiagramEditor {
 	@Override
 	public void doSave(IProgressMonitor monitor) {
 		// Only save the .graphxml file - no .diagram file
-		// Skip parent's doSave as it tries to save the diagram resource
+		// Skip parent's doSave as it tries to save the diagram resource to disk
 		
 		if (screen == null || graphxmlFile == null) {
 			return;
@@ -161,7 +161,11 @@ public class LvglDiagramEditor extends DiagramEditor {
 			}
 			
 			// Mark the command stack as saved to clear the dirty flag
+			// This properly resets the editing domain's dirty state
 			getEditingDomain().getCommandStack().flush();
+			
+			// Fire property change to notify listeners (multi-page editor) that save completed
+			firePropertyChange(PROP_DIRTY);
 		} catch (Exception e) {
 			ConsoleUtil.printError("Failed to save diagram: " + e.getMessage());
 		}
