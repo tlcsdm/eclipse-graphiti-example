@@ -27,7 +27,6 @@ import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.editors.text.TextEditor;
-import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.part.MultiPageEditorPart;
 
 import com.tlcsdm.eclipse.graphiti.demo.model.LvglScreen;
@@ -104,20 +103,22 @@ public class LvglMultiPageEditor extends MultiPageEditorPart implements IResourc
 			setPageText(index, "Source");
 
 			// Add document listener to track changes
-			IDocument document = textEditor.getDocumentProvider().getDocument(getEditorInput());
-			if (document != null) {
-				documentListener = new IDocumentListener() {
-					@Override
-					public void documentChanged(DocumentEvent event) {
-						xmlModified = true;
-					}
+			if (textEditor.getDocumentProvider() != null) {
+				IDocument document = textEditor.getDocumentProvider().getDocument(getEditorInput());
+				if (document != null) {
+					documentListener = new IDocumentListener() {
+						@Override
+						public void documentChanged(DocumentEvent event) {
+							xmlModified = true;
+						}
 
-					@Override
-					public void documentAboutToBeChanged(DocumentEvent event) {
-						// Not needed
-					}
-				};
-				document.addDocumentListener(documentListener);
+						@Override
+						public void documentAboutToBeChanged(DocumentEvent event) {
+							// Not needed
+						}
+					};
+					document.addDocumentListener(documentListener);
+				}
 			}
 		} catch (PartInitException e) {
 			ErrorDialog.openError(
@@ -329,11 +330,14 @@ public class LvglMultiPageEditor extends MultiPageEditorPart implements IResourc
 	public void resourceChanged(final IResourceChangeEvent event) {
 		if (event.getType() == IResourceChangeEvent.PRE_CLOSE) {
 			Display.getDefault().asyncExec(() -> {
-				IWorkbenchPage[] pages = getSite().getWorkbenchWindow().getPages();
-				for (int i = 0; i < pages.length; i++) {
-					if (((FileEditorInput) getEditorInput()).getFile().getProject().equals(event.getResource())) {
-						IEditorPart editorPart = pages[i].findEditor(getEditorInput());
-						pages[i].closeEditor(editorPart, true);
+				IEditorInput input = getEditorInput();
+				if (input instanceof IFileEditorInput) {
+					IWorkbenchPage[] pages = getSite().getWorkbenchWindow().getPages();
+					for (int i = 0; i < pages.length; i++) {
+						if (((IFileEditorInput) input).getFile().getProject().equals(event.getResource())) {
+							IEditorPart editorPart = pages[i].findEditor(input);
+							pages[i].closeEditor(editorPart, true);
+						}
 					}
 				}
 			});

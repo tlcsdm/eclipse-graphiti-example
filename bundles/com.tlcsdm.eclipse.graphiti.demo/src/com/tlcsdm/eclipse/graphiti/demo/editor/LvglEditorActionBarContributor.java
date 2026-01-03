@@ -6,6 +6,7 @@
  ******************************************************************************/
 package com.tlcsdm.eclipse.graphiti.demo.editor;
 
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.ui.IEditorPart;
@@ -32,18 +33,30 @@ public class LvglEditorActionBarContributor extends MultiPageEditorActionBarCont
 
 	@Override
 	public void contributeToToolBar(IToolBarManager toolBarManager) {
-		// Add undo/redo buttons
-		toolBarManager.add(getAction(ActionFactory.UNDO.getId()));
-		toolBarManager.add(getAction(ActionFactory.REDO.getId()));
+		// Add undo/redo buttons with null checks
+		IAction undoAction = getAction(ActionFactory.UNDO.getId());
+		if (undoAction != null) {
+			toolBarManager.add(undoAction);
+		}
+		IAction redoAction = getAction(ActionFactory.REDO.getId());
+		if (redoAction != null) {
+			toolBarManager.add(redoAction);
+		}
 		toolBarManager.add(new Separator());
-		// Add delete button
-		toolBarManager.add(getAction(ActionFactory.DELETE.getId()));
+		// Add delete button with null check
+		IAction deleteAction = getAction(ActionFactory.DELETE.getId());
+		if (deleteAction != null) {
+			toolBarManager.add(deleteAction);
+		}
 	}
 
 	/**
 	 * Gets a global action from the action bars.
+	 * 
+	 * @param actionId the action ID
+	 * @return the action, or null if not registered
 	 */
-	private org.eclipse.jface.action.IAction getAction(String actionId) {
+	private IAction getAction(String actionId) {
 		return getActionBars().getGlobalActionHandler(actionId);
 	}
 }
