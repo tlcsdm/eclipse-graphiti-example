@@ -62,7 +62,7 @@ public class LvglDiagramEditor extends DiagramEditor {
 		}
 
 		super.init(site, input);
-		setTitleToolTip(input.getName());
+		setPartName(input.getName());
 
 		// Register the context menu provider
 		registerContextMenu();
