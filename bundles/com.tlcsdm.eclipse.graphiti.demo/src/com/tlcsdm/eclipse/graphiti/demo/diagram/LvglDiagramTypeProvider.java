@@ -15,7 +15,11 @@ import org.eclipse.graphiti.tb.IToolBehaviorProvider;
  */
 public class LvglDiagramTypeProvider extends AbstractDiagramTypeProvider {
 
+	/** The diagram type ID - used for diagram.setDiagramTypeId() */
 	public static final String DIAGRAM_TYPE_ID = "com.tlcsdm.eclipse.graphiti.demo.LvglDiagram";
+	
+	/** The provider ID - used for DiagramEditorInput.createEditorInput() */
+	public static final String PROVIDER_ID = "com.tlcsdm.eclipse.graphiti.demo.diagramTypeProvider";
 
 	private IToolBehaviorProvider[] toolBehaviorProviders;
 
