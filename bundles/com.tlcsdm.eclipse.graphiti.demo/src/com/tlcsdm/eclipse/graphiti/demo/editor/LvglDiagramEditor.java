@@ -21,6 +21,7 @@ import org.eclipse.graphiti.mm.pictograms.PictogramsFactory;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.graphiti.ui.editor.DiagramEditorInput;
 import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.PartInitException;
@@ -61,7 +62,7 @@ public class LvglDiagramEditor extends DiagramEditor {
 		}
 
 		super.init(site, input);
-		setPartName(input.getName());
+		setTitleToolTip(input.getName());
 
 		// Register the context menu provider
 		registerContextMenu();
@@ -145,8 +146,8 @@ public class LvglDiagramEditor extends DiagramEditor {
 			}
 
 			// Mark save location for dirty tracking
-			getCommandStack().markSaveLocation();
-			firePropertyChange(PROP_DIRTY);
+			getDiagramBehavior().getEditingDomain().getCommandStack().markSaveLocation();
+			firePropertyChange(IEditorPart.PROP_DIRTY);
 		} catch (Exception e) {
 			ConsoleUtil.printError("Failed to save diagram: " + e.getMessage());
 		}
@@ -164,7 +165,7 @@ public class LvglDiagramEditor extends DiagramEditor {
 
 	@Override
 	public boolean isDirty() {
-		return getCommandStack().isDirty();
+		return getDiagramBehavior().getEditingDomain().getCommandStack().isDirty();
 	}
 
 	/**
@@ -193,9 +194,9 @@ public class LvglDiagramEditor extends DiagramEditor {
 	}
 
 	@Override
-	public Object getAdapter(Class type) {
+	public <T> T getAdapter(Class<T> type) {
 		if (type == IFile.class) {
-			return diagramFile;
+			return type.cast(diagramFile);
 		}
 		return super.getAdapter(type);
 	}
