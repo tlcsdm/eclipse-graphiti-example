@@ -16,11 +16,8 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
-import org.eclipse.emf.transaction.TransactionalEditingDomain;
-import org.eclipse.emf.transaction.util.TransactionUtil;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramsFactory;
-import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.graphiti.ui.editor.DiagramEditorInput;
 import org.eclipse.ui.IEditorInput;
@@ -99,12 +96,8 @@ public class LvglDiagramEditor extends DiagramEditor {
 		IFile file = fileInput.getFile();
 		URI uri = URI.createPlatformResourceURI(file.getFullPath().toString(), true);
 
-		// Create a resource set and editing domain
+		// Create a resource set
 		ResourceSet resourceSet = new ResourceSetImpl();
-		TransactionalEditingDomain editingDomain = TransactionUtil.getEditingDomain(resourceSet);
-		if (editingDomain == null) {
-			editingDomain = TransactionalEditingDomain.Factory.INSTANCE.createEditingDomain(resourceSet);
-		}
 
 		// Create a new diagram resource
 		Resource resource = resourceSet.createResource(uri);
@@ -119,13 +112,8 @@ public class LvglDiagramEditor extends DiagramEditor {
 		// Add to resource
 		resource.getContents().add(diagram);
 
-		// Link the screen to the diagram
-		if (screen != null) {
-			Graphiti.getLinkService().setBusinessObjects(diagram, new Object[] { screen });
-		}
-
-		return DiagramEditorInput.createEditorInput(diagram, editingDomain,
-				LvglDiagramTypeProvider.DIAGRAM_TYPE_ID, true);
+		// Create the editor input with correct signature (Diagram, String providerId)
+		return DiagramEditorInput.createEditorInput(diagram, LvglDiagramTypeProvider.DIAGRAM_TYPE_ID);
 	}
 
 	/**
@@ -192,12 +180,6 @@ public class LvglDiagramEditor extends DiagramEditor {
 	 */
 	public void setScreen(LvglScreen newScreen) {
 		this.screen = newScreen;
-
-		// Update the diagram link
-		Diagram diagram = getDiagramTypeProvider().getDiagram();
-		if (diagram != null && screen != null) {
-			Graphiti.getLinkService().setBusinessObjects(diagram, new Object[] { screen });
-		}
 
 		// Refresh the diagram
 		getDiagramBehavior().refresh();

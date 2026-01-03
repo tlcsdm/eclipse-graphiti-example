@@ -16,9 +16,8 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICustomContext;
-import org.eclipse.graphiti.features.custom.ICustomFeature;
+import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
-import org.eclipse.graphiti.ui.editor.DiagramEditor;
 
 import com.tlcsdm.eclipse.graphiti.demo.Activator;
 import com.tlcsdm.eclipse.graphiti.demo.generator.LvglCodeGenerator;
@@ -30,15 +29,13 @@ import com.tlcsdm.eclipse.graphiti.demo.util.ConsoleUtil;
  * Custom feature for generating LVGL C code from the diagram.
  * Can be invoked from the context menu.
  */
-public class GenerateLvglCodeFeature implements ICustomFeature {
+public class GenerateLvglCodeFeature extends AbstractCustomFeature {
 
 	/** Feature ID for generate LVGL code action */
 	public static final String FEATURE_ID = "generateLvglCode";
 
-	private final IFeatureProvider featureProvider;
-
 	public GenerateLvglCodeFeature(IFeatureProvider fp) {
-		this.featureProvider = fp;
+		super(fp);
 	}
 
 	@Override
@@ -58,11 +55,9 @@ public class GenerateLvglCodeFeature implements ICustomFeature {
 
 	@Override
 	public void execute(ICustomContext context) {
-		DiagramEditor editor = (DiagramEditor) featureProvider.getDiagramTypeProvider().getDiagramEditor();
-		
 		// Get the screen from the diagram
-		Diagram diagram = featureProvider.getDiagramTypeProvider().getDiagram();
-		Object bo = featureProvider.getBusinessObjectForPictogramElement(diagram);
+		Diagram diagram = getFeatureProvider().getDiagramTypeProvider().getDiagram();
+		Object bo = getFeatureProvider().getBusinessObjectForPictogramElement(diagram);
 		
 		if (!(bo instanceof LvglScreen)) {
 			ConsoleUtil.printError("Could not find LVGL screen data in the diagram.");
@@ -77,8 +72,8 @@ public class GenerateLvglCodeFeature implements ICustomFeature {
 		}
 
 		try {
-			// Get diagram file
-			IFile diagramFile = getDiagramFile(editor);
+			// Get diagram file from the multi-page editor or adapter
+			IFile diagramFile = getDiagramFile();
 			if (diagramFile == null) {
 				ConsoleUtil.printError("Could not determine the diagram file location.");
 				return;
@@ -120,21 +115,16 @@ public class GenerateLvglCodeFeature implements ICustomFeature {
 		}
 	}
 
-	private IFile getDiagramFile(DiagramEditor editor) {
-		if (editor instanceof LvglDiagramEditor) {
-			return ((LvglDiagramEditor) editor).getDiagramFile();
-		}
-		// Try adapter approach
-		Object adapted = editor.getAdapter(IFile.class);
-		if (adapted instanceof IFile) {
-			return (IFile) adapted;
-		}
-		// Try getting from editor input
-		Object input = editor.getEditorInput();
-		if (input != null) {
-			Object file = editor.getEditorInput().getAdapter(IFile.class);
-			if (file instanceof IFile) {
-				return (IFile) file;
+	private IFile getDiagramFile() {
+		// Try to get the diagram file from the diagram's resource
+		Diagram diagram = getDiagram();
+		if (diagram != null && diagram.eResource() != null) {
+			org.eclipse.emf.common.util.URI uri = diagram.eResource().getURI();
+			if (uri.isPlatformResource()) {
+				String platformString = uri.toPlatformString(true);
+				org.eclipse.core.resources.IWorkspaceRoot root = 
+					org.eclipse.core.resources.ResourcesPlugin.getWorkspace().getRoot();
+				return root.getFile(new Path(platformString));
 			}
 		}
 		return null;
@@ -150,27 +140,7 @@ public class GenerateLvglCodeFeature implements ICustomFeature {
 	}
 
 	@Override
-	public boolean isAvailable(ICustomContext context) {
-		return true;
-	}
-
-	@Override
-	public boolean canUndo(ICustomContext context) {
-		return false;
-	}
-
-	@Override
 	public boolean hasDoneChanges() {
 		return false;
-	}
-
-	@Override
-	public String getImageId() {
-		return null;
-	}
-
-	@Override
-	public IFeatureProvider getFeatureProvider() {
-		return featureProvider;
 	}
 }
