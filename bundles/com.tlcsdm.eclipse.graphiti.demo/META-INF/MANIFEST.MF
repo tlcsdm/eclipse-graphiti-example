@@ -20,7 +20,8 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.graphiti.mm,
  org.eclipse.ui.views.properties.tabbed,
  org.eclipse.gef,
- org.eclipse.emf.edit
+ org.eclipse.emf.edit,
+ org.eclipse.emf.transaction
 Export-Package: com.tlcsdm.eclipse.graphiti.demo,
  com.tlcsdm.eclipse.graphiti.demo.model,
  com.tlcsdm.eclipse.graphiti.demo.diagram,

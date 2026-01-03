@@ -35,9 +35,9 @@ import com.tlcsdm.eclipse.graphiti.demo.model.LvglXmlSerializer;
 import com.tlcsdm.eclipse.graphiti.demo.util.ConsoleUtil;
 
 /**
- * Graphiti-based diagram editor for LVGL UI design.
- * This editor is embedded within the multi-page editor.
- * Uses in-memory diagram model - no .diagram file is created.
+ * Graphiti-based diagram editor for LVGL UI design. This editor is embedded
+ * within the multi-page editor. Uses in-memory diagram model - no .diagram file
+ * is created.
  */
 public class LvglDiagramEditor extends DiagramEditor {
 
@@ -95,12 +95,12 @@ public class LvglDiagramEditor extends DiagramEditor {
 	}
 
 	/**
-	 * Creates an in-memory DiagramEditorInput from an IFileEditorInput.
-	 * The diagram model is stored in memory only - no .diagram file is created.
+	 * Creates an in-memory DiagramEditorInput from an IFileEditorInput. The diagram
+	 * model is stored in memory only - no .diagram file is created.
 	 */
 	private DiagramEditorInput createInMemoryDiagramEditorInput(IFileEditorInput fileInput) {
 		IFile file = fileInput.getFile();
-		
+
 		// Use a virtual URI for the in-memory diagram resource
 		// This prevents any file system access for the diagram model
 		URI diagramUri = URI.createURI("memory://" + file.getFullPath().toString() + ".diagram");
@@ -115,8 +115,9 @@ public class LvglDiagramEditor extends DiagramEditor {
 		diagram.setName(file.getName());
 		diagram.setSnapToGrid(true);
 		diagram.setGridUnit(10);
-		
-		// Initialize GraphicsAlgorithm with background color (required by Graphiti GridLayer)
+
+		// Initialize GraphicsAlgorithm with background color (required by Graphiti
+		// GridLayer)
 		IGaService gaService = Graphiti.getGaService();
 		Rectangle rect = gaService.createRectangle(diagram);
 		rect.setForeground(gaService.manageColor(diagram, IColorConstant.BLACK));
@@ -141,7 +142,7 @@ public class LvglDiagramEditor extends DiagramEditor {
 	public void doSave(IProgressMonitor monitor) {
 		// Only save the .graphxml file - no .diagram file
 		// Skip parent's doSave as it tries to save the diagram resource to disk
-		
+
 		if (screen == null || graphxmlFile == null) {
 			return;
 		}
@@ -159,12 +160,13 @@ public class LvglDiagramEditor extends DiagramEditor {
 			} else {
 				graphxmlFile.create(bais, true, monitor);
 			}
-			
+
 			// Mark the command stack as saved to clear the dirty flag
 			// This properly resets the editing domain's dirty state
 			getEditingDomain().getCommandStack().flush();
-			
-			// Fire property change to notify listeners (multi-page editor) that save completed
+
+			// Fire property change to notify listeners (multi-page editor) that save
+			// completed
 			firePropertyChange(PROP_DIRTY);
 		} catch (Exception e) {
 			ConsoleUtil.printError("Failed to save diagram: " + e.getMessage());
@@ -189,8 +191,8 @@ public class LvglDiagramEditor extends DiagramEditor {
 	}
 
 	/**
-	 * Sets the screen model and refreshes the diagram.
-	 * Used when XML content changes in the source tab.
+	 * Sets the screen model and refreshes the diagram. Used when XML content
+	 * changes in the source tab.
 	 */
 	public void setScreen(LvglScreen newScreen) {
 		this.screen = newScreen;
@@ -212,14 +214,15 @@ public class LvglDiagramEditor extends DiagramEditor {
 		if (type == IFile.class) {
 			return graphxmlFile;
 		}
-		
+
 		// Check if the editor is fully initialized before delegating to parent
-		// The parent's getAdapter may call getEditDomain() which is only set during the editor initialization lifecycle
+		// The parent's getAdapter may call getEditDomain() which is only set during the
+		// editor initialization lifecycle
 		if (getEditDomain() == null) {
 			// Editor not fully initialized yet, return null to avoid NullPointerException
 			return null;
 		}
-		
+
 		return super.getAdapter(type);
 	}
 }
