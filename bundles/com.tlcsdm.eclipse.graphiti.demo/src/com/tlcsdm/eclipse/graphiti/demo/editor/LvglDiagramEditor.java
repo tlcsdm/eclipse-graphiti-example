@@ -149,7 +149,7 @@ public class LvglDiagramEditor extends DiagramEditor {
 		}
 
 		// Create the editor input with correct signature (Diagram, String providerId)
-		return DiagramEditorInput.createEditorInput(diagram, LvglDiagramTypeProvider.DIAGRAM_TYPE_ID);
+		return DiagramEditorInput.createEditorInput(diagram, LvglDiagramTypeProvider.PROVIDER_ID);
 	}
 
 	/**
