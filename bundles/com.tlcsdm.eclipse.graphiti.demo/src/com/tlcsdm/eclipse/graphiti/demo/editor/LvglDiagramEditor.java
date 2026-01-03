@@ -162,8 +162,6 @@ public class LvglDiagramEditor extends DiagramEditor {
 		return false;
 	}
 
-
-
 	/**
 	 * Gets the screen model.
 	 */
@@ -190,9 +188,10 @@ public class LvglDiagramEditor extends DiagramEditor {
 	}
 
 	@Override
-	public <T> T getAdapter(Class<T> type) {
+	@SuppressWarnings("rawtypes")
+	public Object getAdapter(Class type) {
 		if (type == IFile.class) {
-			return type.cast(diagramFile);
+			return diagramFile;
 		}
 		return super.getAdapter(type);
 	}
