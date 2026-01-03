@@ -96,8 +96,15 @@ public class LvglDiagramEditor extends DiagramEditor {
 	private DiagramEditorInput createDiagramEditorInput(IFileEditorInput fileInput) {
 		IFile file = fileInput.getFile();
 		
-		// Create a diagram file path by replacing .graphxml extension with .diagram
-		String diagramFileName = file.getName().replace(".graphxml", ".diagram");
+		// Create diagram filename by replacing the .graphxml extension with .diagram
+		String graphxmlName = file.getName();
+		String diagramFileName;
+		if (graphxmlName.endsWith(".graphxml")) {
+			diagramFileName = graphxmlName.substring(0, graphxmlName.length() - 9) + ".diagram";
+		} else {
+			diagramFileName = graphxmlName + ".diagram";
+		}
+		
 		IFile diagramFile = file.getParent().getFile(new org.eclipse.core.runtime.Path(diagramFileName));
 		
 		URI diagramUri = URI.createPlatformResourceURI(diagramFile.getFullPath().toString(), true);
