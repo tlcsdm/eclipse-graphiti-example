@@ -13,10 +13,10 @@ import java.nio.charset.StandardCharsets;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.handlers.HandlerUtil;
@@ -30,6 +30,7 @@ import com.tlcsdm.eclipse.graphiti.demo.util.ConsoleUtil;
 
 /**
  * Handler for generating code from a .graphxml file in the Project Explorer.
+ * Output is shown in the Eclipse RCP console, not in a dialog.
  */
 public class GenerateCodeFromFileHandler extends AbstractHandler {
 
@@ -45,28 +46,22 @@ public class GenerateCodeFromFileHandler extends AbstractHandler {
 		Object firstElement = structuredSelection.getFirstElement();
 
 		if (!(firstElement instanceof IFile)) {
-			MessageDialog.openError(
-					HandlerUtil.getActiveShell(event),
-					"Error",
-					"Please select a .graphxml file.");
+			ConsoleUtil.printError("Please select a .graphxml file.");
 			return null;
 		}
 
 		IFile file = (IFile) firstElement;
 		if (!file.getName().endsWith(".graphxml")) {
-			MessageDialog.openError(
-					HandlerUtil.getActiveShell(event),
-					"Error",
-					"Please select a .graphxml file.");
+			ConsoleUtil.printError("Please select a .graphxml file.");
 			return null;
 		}
 
-		generateCode(file, event);
+		generateCode(file);
 
 		return null;
 	}
 
-	private void generateCode(IFile diagramFile, ExecutionEvent event) {
+	private void generateCode(IFile diagramFile) {
 		try {
 			// Load the screen from the file
 			LvglXmlSerializer serializer = new LvglXmlSerializer();
@@ -93,36 +88,26 @@ public class GenerateCodeFromFileHandler extends AbstractHandler {
 			String sourceFileName = baseName + ".c";
 
 			// Get parent folder
-			IFolder parentFolder = (IFolder) diagramFile.getParent();
+			IContainer parentFolder = diagramFile.getParent();
 
 			// Write header file
-			IFile headerFile = parentFolder.getFile(headerFileName);
+			IFile headerFile = parentFolder.getFile(new Path(headerFileName));
 			writeFile(headerFile, headerContent);
 
 			// Write source file
-			IFile sourceFile = parentFolder.getFile(sourceFileName);
+			IFile sourceFile = parentFolder.getFile(new Path(sourceFileName));
 			writeFile(sourceFile, sourceContent);
 
 			// Refresh the parent folder
 			parentFolder.refreshLocal(1, new NullProgressMonitor());
 
-			// Log to console
+			// Log to console only (no dialog as per requirements)
 			ConsoleUtil.println("Generated LVGL C code:");
 			ConsoleUtil.println("  - " + headerFile.getFullPath().toString());
 			ConsoleUtil.println("  - " + sourceFile.getFullPath().toString());
 
-			MessageDialog.openInformation(
-					HandlerUtil.getActiveShell(event),
-					"Code Generated",
-					"Successfully generated LVGL C code:\n\n" +
-							"- " + headerFileName + "\n" +
-							"- " + sourceFileName);
-
 		} catch (Exception e) {
-			MessageDialog.openError(
-					HandlerUtil.getActiveShell(event),
-					"Error",
-					"Failed to generate code: " + e.getMessage());
+			ConsoleUtil.printError("Failed to generate code: " + e.getMessage());
 		}
 	}
 

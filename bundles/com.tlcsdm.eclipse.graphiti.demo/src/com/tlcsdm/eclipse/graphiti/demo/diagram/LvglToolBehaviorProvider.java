@@ -8,11 +8,15 @@ package com.tlcsdm.eclipse.graphiti.demo.diagram;
 
 import org.eclipse.graphiti.dt.IDiagramTypeProvider;
 import org.eclipse.graphiti.features.IFeatureProvider;
+import org.eclipse.graphiti.features.context.ICustomContext;
+import org.eclipse.graphiti.features.context.IPictogramElementContext;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.eclipse.graphiti.tb.ContextMenuEntry;
 import org.eclipse.graphiti.tb.DefaultToolBehaviorProvider;
 import org.eclipse.graphiti.tb.IContextButtonPadData;
-import org.eclipse.graphiti.features.context.IPictogramElementContext;
+import org.eclipse.graphiti.tb.IContextMenuEntry;
 
+import com.tlcsdm.eclipse.graphiti.demo.editor.GenerateLvglCodeFeature;
 import com.tlcsdm.eclipse.graphiti.demo.model.LvglWidget;
 
 /**
@@ -31,6 +35,18 @@ public class LvglToolBehaviorProvider extends DefaultToolBehaviorProvider {
 		PictogramElement pe = context.getPictogramElement();
 		setGenericContextButtons(data, pe, CONTEXT_BUTTON_DELETE | CONTEXT_BUTTON_UPDATE);
 		return data;
+	}
+
+	@Override
+	public IContextMenuEntry[] getContextMenu(ICustomContext context) {
+		// Create "Generate LVGL Code" menu entry
+		ContextMenuEntry generateCodeEntry = new ContextMenuEntry(
+				new GenerateLvglCodeFeature(getFeatureProvider()), context);
+		generateCodeEntry.setText("Generate LVGL Code");
+		generateCodeEntry.setDescription("Generate LVGL C Code from Diagram");
+
+		// Return the context menu entries
+		return new IContextMenuEntry[] { generateCodeEntry };
 	}
 
 	@Override

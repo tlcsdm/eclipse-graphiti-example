@@ -34,6 +34,20 @@
       </imageProvider>
    </extension>
 
+   <!-- Multi-Page Editor Registration -->
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            class="com.tlcsdm.eclipse.graphiti.demo.editor.LvglMultiPageEditor"
+            contributorClass="com.tlcsdm.eclipse.graphiti.demo.editor.LvglEditorActionBarContributor"
+            default="true"
+            extensions="graphxml"
+            icon="icons/sample.png"
+            id="com.tlcsdm.eclipse.graphiti.demo.editor.multi"
+            name="LVGL UI Editor">
+      </editor>
+   </extension>
+
    <!-- New Wizard -->
    <extension
          point="org.eclipse.ui.newWizards">
